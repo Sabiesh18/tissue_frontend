@@ -6,18 +6,18 @@
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #DF538B;
+    background-color: #FFF0F5;
     color: #000000;
   }
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars matching the soft theme palette */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #FFF5F8;
+  background: #FFF0F5;
 }
 ::-webkit-scrollbar-thumb {
   background: #F8B4D0;

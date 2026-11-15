@@ -17,8 +17,8 @@ export const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#DF538B] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#D8276D] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#DF538B]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#FFF0F5]">
       {/* Sidebar Navigation */}
       <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 

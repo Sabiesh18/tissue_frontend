@@ -30,8 +30,8 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#DF538B] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border border-white/20">
+    <div className="min-h-screen w-full bg-[#FFF0F5] flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-[#F8B4D0]">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-lg shadow-[#D8276D]/30">
             <Factory className="w-9 h-9" />
