@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { PurchaseOrder, SalesOrder } from '../types';
 import { ShoppingCart, ShoppingBag, ArrowUpRight, ArrowDownLeft, Calendar } from 'lucide-react';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const OrdersView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sales' | 'purchase'>('sales');
@@ -58,7 +59,9 @@ export const OrdersView: React.FC = () => {
         </div>
       </div>
 
-      {activeTab === 'sales' ? (
+      {loading ? (
+        <TableSkeleton rows={5} columns={6} />
+      ) : activeTab === 'sales' ? (
         <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">

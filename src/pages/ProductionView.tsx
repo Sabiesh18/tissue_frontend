@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import { ProductionBatch, ProductionPlan, Product } from '../types';
 import { Factory, Plus, Play, CheckCircle, Clock, AlertTriangle, Layers, Calendar } from 'lucide-react';
 import { formatLabel } from '../utils/formatters';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const ProductionView: React.FC = () => {
   const [batches, setBatches] = useState<ProductionBatch[]>([]);
@@ -137,7 +138,9 @@ export const ProductionView: React.FC = () => {
         </div>
       </div>
 
-      {activeSubTab === 'batches' ? (
+      {loading ? (
+        <TableSkeleton rows={5} columns={7} />
+      ) : activeSubTab === 'batches' ? (
         /* Batches Table */
         <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
           <div className="overflow-x-auto">

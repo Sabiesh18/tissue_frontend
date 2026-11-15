@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Asset } from '../types';
 import { Cpu, Plus, Search, Trash2, Edit2, Wrench, ShieldCheck, MapPin } from 'lucide-react';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const AssetsView: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -122,95 +123,93 @@ export const AssetsView: React.FC = () => {
       </div>
 
       {/* Asset Table */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
-                <th className="py-3.5 px-4">Code / Asset Name</th>
-                <th className="py-3.5 px-4">Category</th>
-                <th className="py-3.5 px-4">Location</th>
-                <th className="py-3.5 px-4 text-right">Purchase Cost</th>
-                <th className="py-3.5 px-4 text-center">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">
-                    Loading asset registry...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={6} columns={6} />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                  <th className="py-3.5 px-4">Code / Asset Name</th>
+                  <th className="py-3.5 px-4">Category</th>
+                  <th className="py-3.5 px-4">Location</th>
+                  <th className="py-3.5 px-4 text-right">Purchase Cost</th>
+                  <th className="py-3.5 px-4 text-center">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
-              ) : assets.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">
-                    No plant assets found matching the criteria
-                  </td>
-                </tr>
-              ) : (
-                assets.map((asset) => (
-                  <tr key={asset.assetId} className="hover:bg-[#FFF5F8]/50 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-extrabold text-black">{asset.assetName}</div>
-                      <div className="text-xs text-[#D8276D] font-bold">{asset.assetCode}</div>
-                      {asset.serialNumber && (
-                        <div className="text-[11px] text-gray-400">SN: {asset.serialNumber}</div>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-pink-50 text-pink-700 border border-pink-100">
-                        {asset.category}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-gray-700">
-                      <div className="flex items-center gap-1.5 text-xs">
-                        <MapPin className="w-3.5 h-3.5 text-[#D8276D]" />
-                        <span>{asset.locationArea || 'Main Facility'}</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-right font-bold text-black">
-                      ₹{Number(asset.purchaseCost).toLocaleString()}
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span
-                        className={`inline-block px-2.5 py-1 text-xs font-bold rounded-full ${
-                          asset.conditionStatus === 'OPERATIONAL'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : asset.conditionStatus === 'MAINTENANCE'
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-rose-100 text-rose-700'
-                        }`}
-                      >
-                        {asset.conditionStatus}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingAsset(asset);
-                            setShowModal(true);
-                          }}
-                          className="p-1.5 text-gray-500 hover:text-[#D8276D] hover:bg-white rounded-lg border border-transparent hover:border-[#F8B4D0]"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(asset.assetId)}
-                          className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-white rounded-lg border border-transparent hover:border-rose-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm font-medium">
+                {assets.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-gray-400">
+                      No plant assets found matching the criteria
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  assets.map((asset) => (
+                    <tr key={asset.assetId} className="hover:bg-[#FFF5F8]/50 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-extrabold text-black">{asset.assetName}</div>
+                        <div className="text-xs text-[#D8276D] font-bold">{asset.assetCode}</div>
+                        {asset.serialNumber && (
+                          <div className="text-[11px] text-gray-400">SN: {asset.serialNumber}</div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-pink-50 text-pink-700 border border-pink-100">
+                          {asset.category}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-gray-700">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <MapPin className="w-3.5 h-3.5 text-[#D8276D]" />
+                          <span>{asset.locationArea || 'Main Facility'}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-bold text-black">
+                        ₹{Number(asset.purchaseCost).toLocaleString()}
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span
+                          className={`inline-block px-2.5 py-1 text-xs font-bold rounded-full ${
+                            asset.conditionStatus === 'OPERATIONAL'
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : asset.conditionStatus === 'MAINTENANCE'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-rose-100 text-rose-700'
+                          }`}
+                        >
+                          {asset.conditionStatus}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingAsset(asset);
+                              setShowModal(true);
+                            }}
+                            className="p-1.5 text-gray-500 hover:text-[#D8276D] hover:bg-white rounded-lg border border-transparent hover:border-[#F8B4D0]"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(asset.assetId)}
+                            className="p-1.5 text-gray-500 hover:text-rose-600 hover:bg-white rounded-lg border border-transparent hover:border-rose-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Asset Modal */}
       {showModal && (

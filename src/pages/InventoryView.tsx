@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import { InventoryItem, Product } from '../types';
 import { Package, AlertTriangle, ArrowDownUp, RefreshCw, Layers } from 'lucide-react';
 import { formatLabel } from '../utils/formatters';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const InventoryView: React.FC = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -81,89 +82,87 @@ export const InventoryView: React.FC = () => {
       </div>
 
       {/* Inventory Table */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
-                <th className="py-3.5 px-4">Item Code / Product Name</th>
-                <th className="py-3.5 px-4">Type</th>
-                <th className="py-3.5 px-4">Location</th>
-                <th className="py-3.5 px-4 text-right">Current Stock</th>
-                <th className="py-3.5 px-4 text-right">Min Level</th>
-                <th className="py-3.5 px-4 text-center">Stock Health</th>
-                <th className="py-3.5 px-4 text-right">Stock Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-400">
-                    Loading inventory records...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={6} columns={7} />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                  <th className="py-3.5 px-4">Item Code / Product Name</th>
+                  <th className="py-3.5 px-4">Type</th>
+                  <th className="py-3.5 px-4">Location</th>
+                  <th className="py-3.5 px-4 text-right">Current Stock</th>
+                  <th className="py-3.5 px-4 text-right">Min Level</th>
+                  <th className="py-3.5 px-4 text-center">Stock Health</th>
+                  <th className="py-3.5 px-4 text-right">Stock Action</th>
                 </tr>
-              ) : inventory.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-400">
-                    No inventory records match the current view
-                  </td>
-                </tr>
-              ) : (
-                inventory.map((item) => (
-                  <tr key={item.inventoryId} className="hover:bg-[#FFF5F8]/50 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-extrabold text-black">{item.productName}</div>
-                      <div className="text-xs text-[#D8276D] font-bold">{item.productCode}</div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className="px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded">
-                        {formatLabel(item.productType)}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-gray-600">
-                      {formatLabel(item.warehouseLocation)}
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <span className="font-extrabold text-black text-base">
-                        {Number(item.currentStock).toLocaleString()}
-                      </span>{' '}
-                      <span className="text-xs font-bold text-gray-500">{item.uom}</span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right text-xs text-gray-500">
-                      {Number(item.minimumStockLevel).toLocaleString()} {item.uom}
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      {item.isLowStock ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-full bg-rose-100 text-rose-700">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>LOW STOCK</span>
-                        </span>
-                      ) : (
-                        <span className="inline-block px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
-                          HEALTHY
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => {
-                          setAdjustModal(item);
-                          setAdjustQty(100);
-                          setAdjustType('INWARD_PURCHASE');
-                        }}
-                        className="px-3 py-1.5 bg-[#D8276D] hover:bg-[#be185d] text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5 ml-auto"
-                      >
-                        <ArrowDownUp className="w-3.5 h-3.5" />
-                        <span>Adjust</span>
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm font-medium">
+                {inventory.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-gray-400">
+                      No inventory records match the current view
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  inventory.map((item) => (
+                    <tr key={item.inventoryId} className="hover:bg-[#FFF5F8]/50 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-extrabold text-black">{item.productName}</div>
+                        <div className="text-xs text-[#D8276D] font-bold">{item.productCode}</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded">
+                          {formatLabel(item.productType)}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-xs font-semibold text-gray-600">
+                        {formatLabel(item.warehouseLocation)}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <span className="font-extrabold text-black text-base">
+                          {Number(item.currentStock).toLocaleString()}
+                        </span>{' '}
+                        <span className="text-xs font-bold text-gray-500">{item.uom}</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right text-xs text-gray-500">
+                        {Number(item.minimumStockLevel).toLocaleString()} {item.uom}
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        {item.isLowStock ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-full bg-rose-100 text-rose-700">
+                            <AlertTriangle className="w-3 h-3" />
+                            <span>LOW STOCK</span>
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
+                            HEALTHY
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <button
+                          onClick={() => {
+                            setAdjustModal(item);
+                            setAdjustQty(100);
+                            setAdjustType('INWARD_PURCHASE');
+                          }}
+                          className="px-3 py-1.5 bg-[#D8276D] hover:bg-[#be185d] text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5 ml-auto"
+                        >
+                          <ArrowDownUp className="w-3.5 h-3.5" />
+                          <span>Adjust</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Adjust Modal */}
       {adjustModal && (

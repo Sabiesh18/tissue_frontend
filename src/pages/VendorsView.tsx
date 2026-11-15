@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Vendor } from '../types';
 import { Truck, Plus, Search, Trash2, Edit2, Phone, Mail, MapPin } from 'lucide-react';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const VendorsView: React.FC = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -87,96 +88,94 @@ export const VendorsView: React.FC = () => {
       </div>
 
       {/* Vendors Table */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
-                <th className="py-3.5 px-4">Vendor Code / Name</th>
-                <th className="py-3.5 px-4">Contact Info</th>
-                <th className="py-3.5 px-4">Location</th>
-                <th className="py-3.5 px-4 text-center">Credit Terms</th>
-                <th className="py-3.5 px-4 text-center">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">
-                    Loading vendor directory...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={5} columns={6} />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                  <th className="py-3.5 px-4">Vendor Code / Name</th>
+                  <th className="py-3.5 px-4">Contact Info</th>
+                  <th className="py-3.5 px-4">Location</th>
+                  <th className="py-3.5 px-4 text-center">Credit Terms</th>
+                  <th className="py-3.5 px-4 text-center">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
-              ) : vendors.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-400">
-                    No vendors registered yet
-                  </td>
-                </tr>
-              ) : (
-                vendors.map((v) => (
-                  <tr key={v.vendorId} className="hover:bg-[#FFF5F8]/50 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-extrabold text-black">{v.vendorName}</div>
-                      <div className="text-xs text-[#D8276D] font-bold">{v.vendorCode}</div>
-                      {v.companyName && (
-                        <div className="text-xs text-gray-500">{v.companyName}</div>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-xs space-y-1">
-                      <div className="flex items-center gap-1.5 text-gray-700">
-                        <Phone className="w-3.5 h-3.5 text-[#D8276D]" />
-                        <span>{v.phone || 'N/A'}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-gray-500">
-                        <Mail className="w-3.5 h-3.5 text-gray-400" />
-                        <span>{v.email || 'N/A'}</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-xs text-gray-700">
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                        <span>
-                          {v.city ? `${v.city}, ${v.state}` : 'India'}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="px-2.5 py-1 text-xs font-semibold bg-gray-100 rounded-md">
-                        {v.creditPeriodDays} Days
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
-                        {v.vendorStatus}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingVendor(v);
-                            setShowModal(true);
-                          }}
-                          className="p-1.5 text-gray-500 hover:text-[#D8276D]"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(v.vendorId)}
-                          className="p-1.5 text-gray-500 hover:text-rose-600"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm font-medium">
+                {vendors.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-gray-400">
+                      No vendors registered yet
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  vendors.map((v) => (
+                    <tr key={v.vendorId} className="hover:bg-[#FFF5F8]/50 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-extrabold text-black">{v.vendorName}</div>
+                        <div className="text-xs text-[#D8276D] font-bold">{v.vendorCode}</div>
+                        {v.companyName && (
+                          <div className="text-xs text-gray-500">{v.companyName}</div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-xs space-y-1">
+                        <div className="flex items-center gap-1.5 text-gray-700">
+                          <Phone className="w-3.5 h-3.5 text-[#D8276D]" />
+                          <span>{v.phone || 'N/A'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-gray-500">
+                          <Mail className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{v.email || 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-xs text-gray-700">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                          <span>
+                            {v.city ? `${v.city}, ${v.state}` : 'India'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="px-2.5 py-1 text-xs font-semibold bg-gray-100 rounded-md">
+                          {v.creditPeriodDays} Days
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
+                          {v.vendorStatus}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingVendor(v);
+                              setShowModal(true);
+                            }}
+                            className="p-1.5 text-gray-500 hover:text-[#D8276D]"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(v.vendorId)}
+                            className="p-1.5 text-gray-500 hover:text-rose-600"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Vendor Modal */}
       {showModal && (

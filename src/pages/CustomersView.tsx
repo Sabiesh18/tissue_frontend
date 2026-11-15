@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { Customer } from '../types';
 import { Users, Plus, Phone, Mail, Building, CreditCard } from 'lucide-react';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const CustomersView: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -79,66 +80,64 @@ export const CustomersView: React.FC = () => {
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
-                <th className="py-3.5 px-4">Customer / Organization</th>
-                <th className="py-3.5 px-4">Contact Person</th>
-                <th className="py-3.5 px-4">City / Region</th>
-                <th className="py-3.5 px-4 text-right">Credit Limit</th>
-                <th className="py-3.5 px-4 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-sm font-medium">
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-400">
-                    Loading accounts...
-                  </td>
+      {loading ? (
+        <TableSkeleton rows={5} columns={5} />
+      ) : (
+        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                  <th className="py-3.5 px-4">Customer / Organization</th>
+                  <th className="py-3.5 px-4">Contact Person</th>
+                  <th className="py-3.5 px-4">City / Region</th>
+                  <th className="py-3.5 px-4 text-right">Credit Limit</th>
+                  <th className="py-3.5 px-4 text-center">Status</th>
                 </tr>
-              ) : customers.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-400">
-                    No customers registered yet
-                  </td>
-                </tr>
-              ) : (
-                customers.map((c) => (
-                  <tr key={c.customerId} className="hover:bg-[#FFF5F8]/50 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-extrabold text-black">{c.customerName}</div>
-                      <div className="text-xs text-[#D8276D] font-bold">{c.customerCode}</div>
-                      {c.companyName && (
-                        <div className="text-xs text-gray-500">{c.companyName}</div>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-xs space-y-1">
-                      <div className="font-bold text-gray-800">{c.contactPerson || 'Direct'}</div>
-                      <div className="flex items-center gap-1.5 text-gray-500">
-                        <Phone className="w-3.5 h-3.5 text-gray-400" />
-                        <span>{c.phone || 'N/A'}</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-gray-600">
-                      {c.city ? `${c.city}, ${c.state || 'India'}` : 'Tamil Nadu'}
-                    </td>
-                    <td className="py-3.5 px-4 text-right font-bold text-black">
-                      ₹{Number(c.creditLimit).toLocaleString()}
-                    </td>
-                    <td className="py-3.5 px-4 text-center">
-                      <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
-                        {c.customerStatus}
-                      </span>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm font-medium">
+                {customers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-400">
+                      No customers registered yet
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  customers.map((c) => (
+                    <tr key={c.customerId} className="hover:bg-[#FFF5F8]/50 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-extrabold text-black">{c.customerName}</div>
+                        <div className="text-xs text-[#D8276D] font-bold">{c.customerCode}</div>
+                        {c.companyName && (
+                          <div className="text-xs text-gray-500">{c.companyName}</div>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-xs space-y-1">
+                        <div className="font-bold text-gray-800">{c.contactPerson || 'Direct'}</div>
+                        <div className="flex items-center gap-1.5 text-gray-500">
+                          <Phone className="w-3.5 h-3.5 text-gray-400" />
+                          <span>{c.phone || 'N/A'}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-xs font-semibold text-gray-600">
+                        {c.city ? `${c.city}, ${c.state || 'India'}` : 'Tamil Nadu'}
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-bold text-black">
+                        ₹{Number(c.creditLimit).toLocaleString()}
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
+                          {c.customerStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Customer Modal */}
       {showModal && (

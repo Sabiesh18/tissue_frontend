@@ -3,6 +3,7 @@ import { api } from '../api/client';
 import { SystemSetting, ActivityLog, User } from '../types';
 import { Settings, Shield, History, Users, Save } from 'lucide-react';
 import { formatLabel, formatSettingKey } from '../utils/formatters';
+import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const SettingsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs'>('settings');
@@ -81,7 +82,9 @@ export const SettingsView: React.FC = () => {
         </div>
       </div>
 
-      {activeTab === 'settings' && (
+      {loading && <TableSkeleton rows={6} columns={4} />}
+
+      {!loading && activeTab === 'settings' && (
         <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0]">
           <h3 className="text-lg font-black text-black mb-4">Enterprise Parameters</h3>
           <div className="divide-y divide-gray-100">
@@ -109,7 +112,7 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'users' && (
+      {!loading && activeTab === 'users' && (
         <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -141,7 +144,7 @@ export const SettingsView: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'logs' && (
+      {!loading && activeTab === 'logs' && (
         <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
