@@ -34,40 +34,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
   ];
 
   return (
-    <aside className="w-80 p-5 flex flex-col h-screen select-none font-roboto">
-      {/* Floating Card Container with four curved edges */}
-      <div className="bg-white rounded-3xl h-full shadow-2xl border border-[#F8B4D0] flex flex-col overflow-hidden">
-        {/* Brand Header */}
-        <div className="p-6 border-b border-[#F8B4D0]/60 bg-gradient-to-b from-[#FFF5F8] to-white flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-lg shadow-[#D8276D]/30 flex-shrink-0">
-            <FontAwesomeIcon icon={faIndustry} className="text-xl" />
+    <aside className="w-72 py-3 pl-3 pr-2 flex flex-col h-screen select-none font-roboto">
+      {/* Floating Card Container with sleek rounded edges and reduced padding */}
+      <div className="bg-white rounded-2xl h-full shadow-xl border border-[#F8B4D0] flex flex-col overflow-hidden">
+        {/* Brand Header - Compact */}
+        <div className="px-4 py-3.5 border-b border-[#F8B4D0]/60 bg-gradient-to-b from-[#FFF5F8] to-white flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-md shadow-[#D8276D]/20 flex-shrink-0">
+            <FontAwesomeIcon icon={faIndustry} className="text-base" />
           </div>
           <div>
-            <h1 className="font-black text-lg text-black tracking-tight leading-tight">
+            <h1 className="font-black text-base text-black tracking-tight leading-tight">
               Tissue Mills
             </h1>
-            <p className="text-[11px] text-gray-500 font-semibold tracking-wide uppercase">
+            <p className="text-[10px] text-gray-500 font-semibold tracking-wide uppercase">
               Plant Operations
             </p>
           </div>
         </div>
 
-        {/* Navigation List */}
-        <nav className="flex-1 px-4 py-5 space-y-2 overflow-y-auto">
+        {/* Navigation List - Reduced gaps between model buttons */}
+        <nav className="flex-1 px-2.5 py-2.5 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = currentTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 group ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-150 group ${
                   isActive
-                    ? 'bg-[#D8276D] text-white shadow-lg shadow-[#D8276D]/30 translate-x-1'
+                    ? 'bg-[#D8276D] text-white shadow-md shadow-[#D8276D]/25 translate-x-0.5'
                     : 'text-gray-700 hover:bg-[#FFF0F5] hover:text-[#D8276D]'
                 }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-colors ${
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs transition-colors flex-shrink-0 ${
                     isActive
                       ? 'bg-white/20 text-white'
                       : 'bg-[#FFF5F8] text-[#D8276D] group-hover:bg-[#D8276D] group-hover:text-white'
@@ -75,24 +75,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
                 >
                   <FontAwesomeIcon icon={item.icon} />
                 </div>
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </button>
             );
           })}
         </nav>
 
-        {/* User Card & Logout Footer */}
-        <div className="p-4 m-3 rounded-2xl bg-[#FFF5F8] border border-[#F8B4D0]/60">
-          <div className="flex items-center justify-between mb-2.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center font-black text-sm shadow">
+        {/* User Card & Logout Footer - Compact */}
+        <div className="p-2.5 m-2 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/60">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center font-black text-xs shadow">
                 {user?.fullName?.charAt(0) || 'A'}
               </div>
               <div>
-                <p className="text-xs font-black text-black truncate max-w-[125px]">
+                <p className="text-[11px] font-black text-black truncate max-w-[120px]">
                   {user?.fullName || 'Administrator'}
                 </p>
-                <span className="inline-block px-2 py-0.5 text-[10px] font-bold bg-white text-[#D8276D] rounded-full border border-[#F8B4D0]">
+                <span className="inline-block px-1.5 py-0.2 text-[9px] font-bold bg-white text-[#D8276D] rounded-full border border-[#F8B4D0]">
                   {user?.roleCode || user?.roleName || 'ADMIN'}
                 </span>
               </div>
@@ -100,13 +100,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
             <button
               onClick={logout}
               title="Sign Out"
-              className="p-2 text-gray-500 hover:text-white hover:bg-[#D8276D] rounded-xl transition-all shadow-sm bg-white border border-[#F8B4D0]"
+              className="p-1.5 text-gray-500 hover:text-white hover:bg-[#D8276D] rounded-lg transition-all shadow-sm bg-white border border-[#F8B4D0]"
             >
-              <FontAwesomeIcon icon={faRightFromBracket} className="w-3.5 h-3.5" />
+              <FontAwesomeIcon icon={faRightFromBracket} className="w-3 h-3" />
             </button>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-bold pt-2 border-t border-[#F8B4D0]/40">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div className="flex items-center gap-1 text-[9px] text-gray-500 font-bold pt-1.5 border-t border-[#F8B4D0]/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>PostgreSQL: tissues (Active)</span>
           </div>
         </div>

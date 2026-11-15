@@ -56,7 +56,7 @@ export const App: React.FC = () => {
       <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
       {/* Main View Area */}
-      <main className="flex-1 overflow-y-auto p-6 md:p-8">
+      <main className="flex-1 overflow-y-auto py-3 pr-4 pl-1 md:py-3.5 md:pr-5 md:pl-1">
         <div className="max-w-7xl mx-auto">{renderContent()}</div>
       </main>
     </div>
