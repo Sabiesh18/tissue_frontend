@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
 
         {/* User Card & Logout Footer - Clean borderless */}
         <div className="p-2.5 m-2 rounded-xl bg-[#FFF5F8]">
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center font-black text-xs shadow">
                 {user?.fullName?.charAt(0) || 'A'}
@@ -103,10 +103,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
             >
               <FontAwesomeIcon icon={faRightFromBracket} className="w-3 h-3" />
             </button>
-          </div>
-          <div className="flex items-center gap-1 text-[9px] text-gray-500 font-bold pt-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>PostgreSQL: tissues (Active)</span>
           </div>
         </div>
       </div>
