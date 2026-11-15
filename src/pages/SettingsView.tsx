@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { SystemSetting, ActivityLog, User } from '../types';
 import { Settings, Shield, History, Users, Save } from 'lucide-react';
+import { formatLabel, formatSettingKey } from '../utils/formatters';
 
 export const SettingsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs'>('settings');
@@ -87,7 +88,7 @@ export const SettingsView: React.FC = () => {
             {settings.map((s) => (
               <div key={s.settingId} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="font-bold text-sm text-black">{s.settingKey}</p>
+                  <p className="font-bold text-sm text-black">{formatSettingKey(s.settingKey)}</p>
                   <p className="text-xs text-gray-500">{s.description || 'System setting'}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -155,10 +156,10 @@ export const SettingsView: React.FC = () => {
               {logs.map((log) => (
                 <tr key={log.activityId} className="hover:bg-[#FFF5F8]/50">
                   <td className="py-2.5 px-4 text-gray-500">{log.createdAt}</td>
-                  <td className="py-2.5 px-4 font-bold text-black">{log.module}</td>
+                  <td className="py-2.5 px-4 font-bold text-black">{formatLabel(log.module)}</td>
                   <td className="py-2.5 px-4">
                     <span className="px-2 py-0.5 rounded bg-pink-100 text-[#D8276D] font-semibold">
-                      {log.activityType}
+                      {formatLabel(log.activityType)}
                     </span>
                   </td>
                   <td className="py-2.5 px-4 text-gray-700">{log.description}</td>

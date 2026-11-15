@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { ProductionBatch, ProductionPlan, Product } from '../types';
 import { Factory, Plus, Play, CheckCircle, Clock, AlertTriangle, Layers, Calendar } from 'lucide-react';
+import { formatLabel } from '../utils/formatters';
 
 export const ProductionView: React.FC = () => {
   const [batches, setBatches] = useState<ProductionBatch[]>([]);
@@ -175,7 +176,7 @@ export const ProductionView: React.FC = () => {
                       <td className="py-3.5 px-4 font-bold text-gray-900">{batch.productName}</td>
                       <td className="py-3.5 px-4 text-center">
                         <span className="px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded">
-                          {batch.shift}
+                          {formatLabel(batch.shift)}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right">

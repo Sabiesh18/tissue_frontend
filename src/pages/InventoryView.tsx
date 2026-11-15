@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { InventoryItem, Product } from '../types';
 import { Package, AlertTriangle, ArrowDownUp, RefreshCw, Layers } from 'lucide-react';
+import { formatLabel } from '../utils/formatters';
 
 export const InventoryView: React.FC = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
@@ -116,11 +117,11 @@ export const InventoryView: React.FC = () => {
                     </td>
                     <td className="py-3.5 px-4">
                       <span className="px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded">
-                        {item.productType}
+                        {formatLabel(item.productType)}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-xs font-semibold text-gray-600">
-                      {item.warehouseLocation}
+                      {formatLabel(item.warehouseLocation)}
                     </td>
                     <td className="py-3.5 px-4 text-right">
                       <span className="font-extrabold text-black text-base">
