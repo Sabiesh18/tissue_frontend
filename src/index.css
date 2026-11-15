@@ -32,3 +32,48 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #D8276D;
 }
+
+/* Creative Dribbble-style Toilet Paper Animations */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1.5deg);
+  }
+}
+
+@keyframes unroll {
+  0%, 100% {
+    transform: scaleX(0.96) translateY(0);
+  }
+  50% {
+    transform: scaleX(1.04) translateY(2px);
+  }
+}
+
+@keyframes progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(30%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-unroll {
+  animation: unroll 2s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+.animate-progress {
+  animation: progress-slide 1.8s ease-in-out infinite;
+  width: 50%;
+}

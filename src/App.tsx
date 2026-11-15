@@ -10,17 +10,14 @@ import { VendorsView } from './pages/VendorsView';
 import { CustomersView } from './pages/CustomersView';
 import { OrdersView } from './pages/OrdersView';
 import { SettingsView } from './pages/SettingsView';
+import { ToiletPaperLoader } from './components/ToiletPaperLoader';
 
 export const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#D8276D] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <ToiletPaperLoader message="Loading Plant Systems..." />;
   }
 
   if (!isAuthenticated) {
