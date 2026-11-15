@@ -6,9 +6,13 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Roboto', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
+      },
       colors: {
         theme: {
-          bg: '#FFF0F5',       // Least / subtle soft shade of primary theme for application background
+          bg: '#FFF0F5',       // Softest pink canvas background
           light: '#DF538B',    // Primary Light Pink
           dark: '#D8276D',     // Primary Dark Pink (Buttons, actions, highlights)
           card: '#FFFFFF',     // Pure White container cards

@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { DashboardMetrics } from '../types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  Factory,
-  Package,
-  Cpu,
-  Truck,
-  Users,
-  AlertTriangle,
-  TrendingUp,
-  Activity,
-  Layers,
-  CheckCircle2,
-  Clock,
-} from 'lucide-react';
+  faIndustry,
+  faBoxesStacked,
+  faCogs,
+  faTriangleExclamation,
+  faArrowTrendUp,
+  faChartPie,
+  faCircleCheck,
+  faCircleDot,
+  faArrowsRotate,
+  faTruckFast,
+  faUsers,
+  faLayerGroup,
+  faClock,
+} from '@fortawesome/free-solid-svg-icons';
 
 export const DashboardView: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -41,277 +44,363 @@ export const DashboardView: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-10 h-10 border-4 border-[#D8276D] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-[#D8276D] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
+  // Calculated circular gauges
+  const operationalRatio =
+    metrics?.totalAssets && metrics.totalAssets > 0
+      ? Math.round(((metrics.operationalAssets || 0) / metrics.totalAssets) * 100)
+      : 100;
+
+  const totalProd = Number(metrics?.totalProduction || 0);
+  const totalWaste = Number(metrics?.totalWastageKg || 0);
+  const totalVolume = totalProd + totalWaste;
+  const yieldEfficiency =
+    totalVolume > 0 ? Math.min(100, Math.round((totalProd / totalVolume) * 100)) : 99;
+
   return (
-    <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-black">Manufacturing Plant Operations</h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Real-time production, raw material consumption, machinery telemetry & order fulfillment.
-          </p>
+    <div className="space-y-6 font-roboto">
+      {/* Top Banner Card */}
+      <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-lg shadow-[#D8276D]/30">
+            <FontAwesomeIcon icon={faChartPie} className="text-2xl" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-black text-black">Manufacturing Plant Executive Dashboard</h2>
+            <p className="text-xs text-gray-500 font-medium mt-0.5">
+              Live telemetry, graphical production analytics, circular yield meters & line status.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0F5] text-[#D8276D] border border-[#F8B4D0]">
-            Plant Status: NORMAL
-          </span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0F5] text-[#D8276D] border border-[#F8B4D0]">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Plant: Operational</span>
+          </div>
           <button
             onClick={fetchMetrics}
-            className="px-4 py-2 bg-[#D8276D] hover:bg-[#be185d] text-white rounded-xl text-xs font-bold shadow transition-all"
+            className="px-4 py-2 bg-[#D8276D] hover:bg-[#be185d] text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2 transition-all"
           >
-            Refresh Telemetry
+            <FontAwesomeIcon icon={faArrowsRotate} />
+            <span>Sync Telemetry</span>
           </button>
         </div>
       </div>
 
-      {/* Primary KPI Cards */}
+      {/* Primary KPI Circular Gauge Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-[#F8B4D0]">
+        {/* Total Production Card with Progress Bar */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Total Production</span>
-            <div className="p-2.5 rounded-xl bg-[#FFF0F5] text-[#D8276D]">
-              <Factory className="w-5 h-5" />
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Output</span>
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F5] text-[#D8276D] flex items-center justify-center">
+              <FontAwesomeIcon icon={faIndustry} />
             </div>
           </div>
-          <p className="text-3xl font-black text-black mt-3">
-            {Number(metrics?.totalProduction || 0).toLocaleString()} <span className="text-sm font-semibold text-gray-500">Packs</span>
-          </p>
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
-            <TrendingUp className="w-4 h-4" />
-            <span>Today: {Number(metrics?.todayProduction || 0).toLocaleString()} Packs</span>
+          <div className="my-3">
+            <p className="text-3xl font-black text-black">
+              {Number(metrics?.totalProduction || 0).toLocaleString()}
+            </p>
+            <p className="text-xs font-bold text-gray-500 mt-1">Finished Tissue Packs Produced</p>
+          </div>
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+            <span className="flex items-center gap-1.5">
+              <FontAwesomeIcon icon={faArrowTrendUp} />
+              <span>Today: {Number(metrics?.todayProduction || 0).toLocaleString()}</span>
+            </span>
+            <span className="text-gray-400">Packs</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-[#F8B4D0]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Active Batches</span>
-            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
-              <Activity className="w-5 h-5" />
-            </div>
+        {/* Circular Progress Gauge 1: Machinery Operational Rate */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Plant Uptime</span>
+            <p className="text-2xl font-black text-black mt-2">
+              {metrics?.operationalAssets || 0} / {metrics?.totalAssets || 0}
+            </p>
+            <p className="text-xs font-bold text-emerald-600 mt-1">
+              {operationalRatio}% Machinery Online
+            </p>
           </div>
-          <p className="text-3xl font-black text-black mt-3">
-            {metrics?.activeBatches || 0} <span className="text-sm font-semibold text-gray-500">Lines</span>
-          </p>
-          <p className="mt-2 text-xs text-gray-500 font-medium">Running & Scheduled Machine Jobs</p>
+          <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path
+                className="text-gray-100"
+                strokeWidth="3.8"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className="text-[#D8276D]"
+                strokeDasharray={`${operationalRatio}, 100`}
+                strokeWidth="3.8"
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <span className="absolute text-xs font-black text-black">{operationalRatio}%</span>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-[#F8B4D0]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Operational Assets</span>
-            <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600">
-              <Cpu className="w-5 h-5" />
-            </div>
+        {/* Circular Progress Gauge 2: Production Yield Efficiency */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Yield Efficiency</span>
+            <p className="text-2xl font-black text-black mt-2">{yieldEfficiency}%</p>
+            <p className="text-xs font-bold text-[#D8276D] mt-1">
+              Wastage: {Number(metrics?.totalWastageKg || 0).toFixed(1)} kg
+            </p>
           </div>
-          <p className="text-3xl font-black text-black mt-3">
-            {metrics?.operationalAssets || 0} / {metrics?.totalAssets || 0}
-          </p>
-          <p className="mt-2 text-xs text-emerald-600 font-semibold">100% Machinery Operational</p>
+          <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+              <path
+                className="text-gray-100"
+                strokeWidth="3.8"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className="text-emerald-500"
+                strokeDasharray={`${yieldEfficiency}, 100`}
+                strokeWidth="3.8"
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="none"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+            </svg>
+            <span className="absolute text-xs font-black text-black">{yieldEfficiency}%</span>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-[#F8B4D0]">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Low Stock Alerts</span>
-            <div className={`p-2.5 rounded-xl ${metrics?.lowStockCount ? 'bg-rose-50 text-rose-600' : 'bg-gray-50 text-gray-400'}`}>
-              <AlertTriangle className="w-5 h-5" />
-            </div>
+        {/* Low Stock Alert Circular Indicator */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Stock Threshold</span>
+            <p className="text-2xl font-black text-black mt-2">
+              {metrics?.lowStockCount || 0}
+            </p>
+            <p className="text-xs font-bold text-rose-600 mt-1">Reorder Required</p>
           </div>
-          <p className="text-3xl font-black text-black mt-3">
-            {metrics?.lowStockCount || 0} <span className="text-sm font-semibold text-gray-500">Items</span>
-          </p>
-          <p className="mt-2 text-xs text-rose-600 font-semibold">Below minimum reorder threshold</p>
+          <div className="w-16 h-16 rounded-full bg-rose-50 border-4 border-rose-200 flex items-center justify-center text-rose-600 flex-shrink-0 shadow-inner">
+            <FontAwesomeIcon icon={faTriangleExclamation} className="text-2xl" />
+          </div>
         </div>
       </div>
 
-      {/* Production & Wastage Trends + Plant Status */}
+      {/* Graphical Bar Charts & Donut Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Production Trend Table / Visualization */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0]">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-extrabold text-lg text-black">Weekly Production & Material Wastage</h3>
-            <span className="text-xs font-semibold text-gray-500">Last 7 Days (PG Function Aggregation)</span>
+        {/* Graphical Weekly Production Bar Chart */}
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="font-black text-lg text-black">Weekly Production Output (Graphical)</h3>
+              <p className="text-xs text-gray-400 font-medium">Daily manufactured pack volumes</p>
+            </div>
+            <span className="px-3 py-1 bg-[#FFF5F8] text-[#D8276D] font-bold text-xs rounded-full border border-[#F8B4D0]">
+              7-Day Trend
+            </span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[#F8B4D0] text-xs font-bold text-gray-500 uppercase">
-                  <th className="py-3 px-3">Day / Date</th>
-                  <th className="py-3 px-3 text-right">Finished Goods (Packs)</th>
-                  <th className="py-3 px-3 text-right">Pulp Wastage (Kg)</th>
-                  <th className="py-3 px-3 text-right">Yield Efficiency</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 text-sm font-medium">
-                {metrics?.productionTrend && metrics.productionTrend.length > 0 ? (
-                  metrics.productionTrend.map((row, idx) => {
-                    const prod = Number(row.produced || 0);
-                    const waste = Number(row.wastage || 0);
-                    const efficiency = prod > 0 ? ((prod / (prod + waste * 2)) * 100).toFixed(1) + '%' : '-';
-                    return (
-                      <tr key={idx} className="hover:bg-[#FFF5F8] transition-colors">
-                        <td className="py-3 px-3 font-bold text-black">
-                          {row.day} <span className="text-xs font-normal text-gray-500">({row.date})</span>
-                        </td>
-                        <td className="py-3 px-3 text-right font-extrabold text-[#D8276D]">
-                          {prod.toLocaleString()}
-                        </td>
-                        <td className="py-3 px-3 text-right text-gray-700">{waste.toFixed(2)} kg</td>
-                        <td className="py-3 px-3 text-right font-bold text-emerald-600">{efficiency}</td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="py-6 text-center text-gray-400">
-                      No production history recorded for the current week
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          {/* SVG Vector Bar Graph with High-Density Curves */}
+          <div className="h-64 flex items-end justify-between gap-3 px-2 pt-6 pb-2 border-b border-gray-100">
+            {metrics?.productionTrend && metrics.productionTrend.length > 0 ? (
+              metrics.productionTrend.map((item, idx) => {
+                const prod = Number(item.produced || 0);
+                const maxProd = Math.max(
+                  ...metrics.productionTrend.map((t) => Number(t.produced || 0)),
+                  1000
+                );
+                const barHeight = Math.max(12, Math.round((prod / maxProd) * 100));
+
+                return (
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
+                    <span className="text-[10px] font-bold text-[#D8276D] opacity-0 group-hover:opacity-100 transition-opacity">
+                      {prod.toLocaleString()}
+                    </span>
+                    <div
+                      style={{ height: `${barHeight}%` }}
+                      className="w-full max-w-[48px] bg-gradient-to-t from-[#D8276D] to-[#DF538B] rounded-2xl shadow-md group-hover:from-[#be185d] group-hover:to-[#D8276D] transition-all transform group-hover:scale-105 relative"
+                    >
+                      {prod > 0 && (
+                        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-white/80"></div>
+                      )}
+                    </div>
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-[#D8276D]">
+                      {item.day}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="w-full text-center text-gray-400 py-12">No trend data available</div>
+            )}
+          </div>
+
+          <div className="mt-4 flex items-center justify-between text-xs text-gray-500 font-semibold px-2">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#D8276D]"></span>
+              <span>Finished Goods Yield (Packs)</span>
+            </div>
+            <span>Daily Capacity Limit: 10,000 Packs</span>
           </div>
         </div>
 
-        {/* Plant Overview & Counts */}
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col justify-between">
+        {/* Circular Distribution / Donut Composition Card */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
           <div>
-            <h3 className="font-extrabold text-lg text-black mb-4">Enterprise Summary</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
-                <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-[#D8276D]" />
-                  <span className="text-sm font-bold text-black">Approved Vendors</span>
-                </div>
-                <span className="font-extrabold text-base text-[#D8276D]">{metrics?.totalVendors || 0}</span>
-              </div>
+            <h3 className="font-black text-lg text-black mb-1">Production vs Wastage</h3>
+            <p className="text-xs text-gray-400 font-medium mb-6">Material conversion breakdown</p>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-[#D8276D]" />
-                  <span className="text-sm font-bold text-black">Active Customers</span>
-                </div>
-                <span className="font-extrabold text-base text-[#D8276D]">{metrics?.totalCustomers || 0}</span>
+            {/* Circular Visual Ring */}
+            <div className="relative w-44 h-44 mx-auto flex items-center justify-center my-2">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.9155"
+                  fill="none"
+                  stroke="#FFF0F5"
+                  strokeWidth="5"
+                />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.9155"
+                  fill="none"
+                  stroke="#D8276D"
+                  strokeWidth="5"
+                  strokeDasharray={`${yieldEfficiency}, 100`}
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <span className="text-2xl font-black text-black">{yieldEfficiency}%</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase">Yield Rate</span>
               </div>
+            </div>
 
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
-                <div className="flex items-center gap-3">
-                  <Package className="w-5 h-5 text-[#D8276D]" />
-                  <span className="text-sm font-bold text-black">Catalog Products</span>
+            {/* Circular Ring Legend */}
+            <div className="space-y-3 mt-6">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3 h-3 rounded-full bg-[#D8276D]"></span>
+                  <span className="text-xs font-bold text-gray-800">Finished Goods</span>
                 </div>
-                <span className="font-extrabold text-base text-[#D8276D]">{metrics?.totalProducts || 0}</span>
+                <span className="text-xs font-black text-black">
+                  {totalProd.toLocaleString()} Packs
+                </span>
               </div>
-
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
-                <div className="flex items-center gap-3">
-                  <Layers className="w-5 h-5 text-[#D8276D]" />
-                  <span className="text-sm font-bold text-black">Total Wastage Recorded</span>
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-3 h-3 rounded-full bg-rose-500"></span>
+                  <span className="text-xs font-bold text-gray-800">Scrap / Pulp Loss</span>
                 </div>
-                <span className="font-extrabold text-base text-rose-600">
-                  {Number(metrics?.totalWastageKg || 0).toFixed(2)} kg
+                <span className="text-xs font-black text-rose-600">
+                  {totalWaste.toFixed(2)} Kg
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-            <span>Database: local-dev (tissues)</span>
-            <span className="text-emerald-600 font-bold">Synchronized</span>
+          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+            <span>Plant Target: &gt;95% Yield</span>
+            <span className="text-emerald-600">Optimal Standard</span>
           </div>
         </div>
       </div>
 
-      {/* Recent Production Batches & Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Batches */}
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0]">
-          <h3 className="font-extrabold text-lg text-black mb-4">Recent Production Batches</h3>
+      {/* Circle Stat Bubbles & Live Batches */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Plant Hub Metrics in Circle Pods */}
+        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0]">
+          <h3 className="font-black text-lg text-black mb-4">Plant Asset & Partner Circles</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
+                <FontAwesomeIcon icon={faCogs} />
+              </div>
+              <p className="text-2xl font-black text-black">{metrics?.totalAssets || 0}</p>
+              <p className="text-[11px] font-bold text-gray-500">Plant Machines</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
+                <FontAwesomeIcon icon={faTruckFast} />
+              </div>
+              <p className="text-2xl font-black text-black">{metrics?.totalVendors || 0}</p>
+              <p className="text-[11px] font-bold text-gray-500">Pulp Vendors</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
+                <FontAwesomeIcon icon={faUsers} />
+              </div>
+              <p className="text-2xl font-black text-black">{metrics?.totalCustomers || 0}</p>
+              <p className="text-[11px] font-bold text-gray-500">Wholesale Clients</p>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
+                <FontAwesomeIcon icon={faBoxesStacked} />
+              </div>
+              <p className="text-2xl font-black text-black">{metrics?.totalProducts || 0}</p>
+              <p className="text-[11px] font-bold text-gray-500">Catalog SKUs</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Active Batches Queue */}
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0]">
+          <h3 className="font-black text-lg text-black mb-4">Live Production Lines</h3>
           <div className="space-y-3">
             {metrics?.recentBatches && metrics.recentBatches.length > 0 ? (
-              metrics.recentBatches.map((batch) => (
+              metrics.recentBatches.map((b) => (
                 <div
-                  key={batch.batchId}
-                  className="p-3.5 rounded-xl border border-gray-100 hover:border-[#F8B4D0] bg-[#FFF5F8]/40 flex items-center justify-between transition-all"
+                  key={b.batchId}
+                  className="p-4 rounded-2xl border border-gray-100 hover:border-[#F8B4D0] bg-[#FFF5F8]/40 flex items-center justify-between transition-all"
                 >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-sm text-[#D8276D]">{batch.batchCode}</span>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          batch.batchStatus === 'COMPLETED'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : batch.batchStatus === 'RUNNING'
-                            ? 'bg-amber-100 text-amber-700 animate-pulse'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {batch.batchStatus}
-                      </span>
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-full bg-white border border-[#F8B4D0] flex items-center justify-center text-[#D8276D] font-black text-xs shadow-sm">
+                      <FontAwesomeIcon icon={faCircleDot} className="animate-pulse" />
                     </div>
-                    <p className="text-xs font-semibold text-black mt-1">{batch.productName}</p>
-                    <p className="text-[11px] text-gray-500">{batch.machineName}</p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-black text-sm text-[#D8276D]">{b.batchCode}</span>
+                        <span
+                          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                            b.batchStatus === 'COMPLETED'
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-amber-100 text-amber-700 animate-pulse'
+                          }`}
+                        >
+                          {b.batchStatus}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-black mt-0.5">{b.productName}</p>
+                      <p className="text-[11px] text-gray-400">{b.machineName}</p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-extrabold text-black">
-                      {Number(batch.producedQuantity).toLocaleString()}
+                    <p className="text-base font-black text-black">
+                      {Number(b.producedQuantity).toLocaleString()}
                     </p>
-                    <p className="text-[10px] text-gray-500">Produced</p>
+                    <p className="text-[10px] font-bold text-gray-400">Packs Output</p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-gray-400 py-4 text-center">No batches recorded</p>
+              <p className="text-center py-8 text-gray-400 text-sm">No batches queued</p>
             )}
-          </div>
-        </div>
-
-        {/* Live Manufacturing Line Equipment Status */}
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0]">
-          <h3 className="font-extrabold text-lg text-black mb-4">Primary Plant Equipment</h3>
-          <div className="space-y-3">
-            <div className="p-3.5 rounded-xl border border-gray-100 bg-[#FFF5F8]/40 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-bold text-black">High-Speed Automatic Toilet Roll Rewinder</p>
-                <p className="text-xs text-gray-500">Line 1 · 2800mm Web Width · Auto Core Feeder</p>
-              </div>
-              <span className="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full">
-                ONLINE
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-gray-100 bg-[#FFF5F8]/40 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-bold text-black">Facial Tissue Interfolding & Box Filling Line</p>
-                <p className="text-xs text-gray-500">Line 2 · 400 pulls/min · Vacuum Folding</p>
-              </div>
-              <span className="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full">
-                ONLINE
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-gray-100 bg-[#FFF5F8]/40 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-bold text-black">Double Steel-to-Rubber Embossing Unit</p>
-                <p className="text-xs text-gray-500">Line 1 · Heated Cylinders · Deslitter</p>
-              </div>
-              <span className="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full">
-                ONLINE
-              </span>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-gray-100 bg-[#FFF5F8]/40 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-bold text-black">Automatic Shrink Wrap & Poly Bagging Machine</p>
-                <p className="text-xs text-gray-500">Packaging Bay · 80 Packs/min · Thermal Tunnel</p>
-              </div>
-              <span className="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full">
-                ONLINE
-              </span>
-            </div>
           </div>
         </div>
       </div>
