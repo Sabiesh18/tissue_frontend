@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { SystemSetting, ActivityLog, User } from '../types';
-import { Settings, Shield, History, Users, Save } from 'lucide-react';
 import { formatLabel, formatSettingKey } from '../utils/formatters';
 import { TableSkeleton } from '../components/SkeletonLoader';
 
@@ -47,14 +46,14 @@ export const SettingsView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-black">Settings & Administration</h2>
           <p className="text-sm text-gray-600 mt-1">
             Plant system configurations, user RBAC privileges and immutable PostgreSQL activity logs.
           </p>
         </div>
-        <div className="bg-[#FFF5F8] p-1 rounded-xl border border-[#F8B4D0] flex">
+        <div className="bg-[#FFF5F8] p-1 rounded-xl flex">
           <button
             onClick={() => setActiveTab('settings')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -85,7 +84,7 @@ export const SettingsView: React.FC = () => {
       {loading && <TableSkeleton rows={6} columns={4} />}
 
       {!loading && activeTab === 'settings' && (
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0]">
+        <div className="bg-white rounded-2xl p-6 shadow-md">
           <h3 className="text-lg font-black text-black mb-4">Enterprise Parameters</h3>
           <div className="divide-y divide-gray-100">
             {settings.map((s) => (
@@ -103,7 +102,7 @@ export const SettingsView: React.FC = () => {
                         handleSaveSetting(s.settingKey, e.target.value);
                       }
                     }}
-                    className="px-3 py-1.5 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm font-semibold text-black focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
+                    className="px-3 py-1.5 bg-[#FFF5F8] rounded-xl text-sm font-semibold text-black focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
               </div>
@@ -113,10 +112,10 @@ export const SettingsView: React.FC = () => {
       )}
 
       {!loading && activeTab === 'users' && (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+              <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                 <th className="py-3.5 px-4">Username / Name</th>
                 <th className="py-3.5 px-4">Role</th>
                 <th className="py-3.5 px-4">Email</th>
@@ -145,10 +144,10 @@ export const SettingsView: React.FC = () => {
       )}
 
       {!loading && activeTab === 'logs' && (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+              <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                 <th className="py-3 px-4">Timestamp</th>
                 <th className="py-3 px-4">Module</th>
                 <th className="py-3 px-4">Activity</th>

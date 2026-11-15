@@ -10,7 +10,6 @@ import {
   faCartShopping,
   faSliders,
   faRightFromBracket,
-  faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,10 +34,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
 
   return (
     <aside className="w-72 py-3 pl-3 pr-2 flex flex-col h-screen select-none font-roboto">
-      {/* Floating Card Container with sleek rounded edges and reduced padding */}
-      <div className="bg-white rounded-2xl h-full shadow-xl border border-[#F8B4D0] flex flex-col overflow-hidden">
+      {/* Floating Card Container with sleek rounded edges and clean shadow - no borders */}
+      <div className="bg-white rounded-2xl h-full shadow-xl flex flex-col overflow-hidden">
         {/* Brand Header - Compact */}
-        <div className="px-4 py-3.5 border-b border-[#F8B4D0]/60 bg-gradient-to-b from-[#FFF5F8] to-white flex items-center gap-3">
+        <div className="px-4 py-3.5 bg-gradient-to-b from-[#FFF5F8] to-white flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-md shadow-[#D8276D]/20 flex-shrink-0">
             <FontAwesomeIcon icon={faIndustry} className="text-base" />
           </div>
@@ -81,8 +80,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
           })}
         </nav>
 
-        {/* User Card & Logout Footer - Compact */}
-        <div className="p-2.5 m-2 rounded-xl bg-[#FFF5F8] border border-[#F8B4D0]/60">
+        {/* User Card & Logout Footer - Clean borderless */}
+        <div className="p-2.5 m-2 rounded-xl bg-[#FFF5F8]">
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center font-black text-xs shadow">
@@ -92,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
                 <p className="text-[11px] font-black text-black truncate max-w-[120px]">
                   {user?.fullName || 'Administrator'}
                 </p>
-                <span className="inline-block px-1.5 py-0.2 text-[9px] font-bold bg-white text-[#D8276D] rounded-full border border-[#F8B4D0]">
+                <span className="inline-block px-1.5 py-0.2 text-[9px] font-bold bg-white text-[#D8276D] rounded-full shadow-sm">
                   {user?.roleCode || user?.roleName || 'ADMIN'}
                 </span>
               </div>
@@ -100,12 +99,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, setCurrentTab }) =
             <button
               onClick={logout}
               title="Sign Out"
-              className="p-1.5 text-gray-500 hover:text-white hover:bg-[#D8276D] rounded-lg transition-all shadow-sm bg-white border border-[#F8B4D0]"
+              className="p-1.5 text-gray-500 hover:text-white hover:bg-[#D8276D] rounded-lg transition-all shadow-sm bg-white"
             >
               <FontAwesomeIcon icon={faRightFromBracket} className="w-3 h-3" />
             </button>
           </div>
-          <div className="flex items-center gap-1 text-[9px] text-gray-500 font-bold pt-1.5 border-t border-[#F8B4D0]/40">
+          <div className="flex items-center gap-1 text-[9px] text-gray-500 font-bold pt-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>PostgreSQL: tissues (Active)</span>
           </div>

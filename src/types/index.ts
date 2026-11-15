@@ -179,6 +179,8 @@ export interface ProductionBatch {
   endTime?: string;
 }
 
+export type Batch = ProductionBatch;
+
 export interface PurchaseOrder {
   poId: string;
   poNumber: string;

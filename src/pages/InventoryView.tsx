@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ArrowDownUp, AlertTriangle, RefreshCw } from 'lucide-react';
 import { api } from '../api/client';
-import { InventoryItem, Product } from '../types';
-import { Package, AlertTriangle, ArrowDownUp, RefreshCw, Layers } from 'lucide-react';
-import { formatLabel } from '../utils/formatters';
+import { InventoryItem } from '../types';
 import { TableSkeleton } from '../components/SkeletonLoader';
+import { formatLabel } from '../utils/formatters';
 
 export const InventoryView: React.FC = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [lowStockFilter, setLowStockFilter] = useState(false);
   const [adjustModal, setAdjustModal] = useState<InventoryItem | null>(null);
-  const [adjustQty, setAdjustQty] = useState<number>(100);
+  const [adjustQty, setAdjustQty] = useState<number>(0);
   const [adjustType, setAdjustType] = useState<string>('INWARD_PURCHASE');
 
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const res = await api.getInventory({ lowStockOnly: lowStockFilter ? 'true' : 'false' });
-      if (res.success && res.data) {
-        setInventory(res.data);
+      const res = await api.getInventory({
+        isLowStock: lowStockFilter ? true : undefined,
+      });
+      if (res && res.resultData) {
+        setInventory(res.resultData);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Failed to fetch inventory', e);
     } finally {
       setLoading(false);
     }
@@ -40,21 +42,21 @@ export const InventoryView: React.FC = () => {
         productId: adjustModal.productId,
         movementType: adjustType,
         quantity: adjustQty,
-        referenceType: 'MANUAL_ADJUST',
-        notes: 'Manual inventory adjustment via management portal',
+        referenceType: 'MANUAL_ADJUSTMENT',
+        remarks: 'Manual balance correction from dashboard',
       });
-      alert('Stock successfully updated!');
       setAdjustModal(null);
       fetchInventory();
     } catch (e) {
-      alert('Error updating stock');
+      console.error('Failed to update stock', e);
+      alert('Error updating stock inventory');
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-black">Inventory & Raw Material Stock</h2>
           <p className="text-sm text-gray-600 mt-1">
@@ -64,17 +66,17 @@ export const InventoryView: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setLowStockFilter(!lowStockFilter)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${
               lowStockFilter
-                ? 'bg-rose-600 text-white border-rose-600 shadow'
-                : 'bg-[#FFF5F8] text-[#D8276D] border-[#F8B4D0]'
+                ? 'bg-rose-600 text-white shadow'
+                : 'bg-[#FFF5F8] text-[#D8276D]'
             }`}
           >
             {lowStockFilter ? 'Showing Low Stock Alerts' : 'Filter Low Stock Only'}
           </button>
           <button
             onClick={fetchInventory}
-            className="p-2.5 bg-white border border-[#F8B4D0] text-gray-600 hover:text-[#D8276D] rounded-xl shadow-sm"
+            className="p-2.5 bg-white text-gray-600 hover:text-[#D8276D] rounded-xl shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -85,11 +87,11 @@ export const InventoryView: React.FC = () => {
       {loading ? (
         <TableSkeleton rows={6} columns={7} />
       ) : (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                   <th className="py-3.5 px-4">Item Code / Product Name</th>
                   <th className="py-3.5 px-4">Type</th>
                   <th className="py-3.5 px-4">Location</th>
@@ -167,7 +169,7 @@ export const InventoryView: React.FC = () => {
       {/* Adjust Modal */}
       {adjustModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#F8B4D0]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
             <h3 className="text-xl font-black text-black mb-1">Stock Adjustment</h3>
             <p className="text-xs text-gray-500 mb-4">{adjustModal.productName}</p>
 
@@ -177,7 +179,7 @@ export const InventoryView: React.FC = () => {
                 <select
                   value={adjustType}
                   onChange={(e) => setAdjustType(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm font-semibold"
+                  className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                 >
                   <option value="INWARD_PURCHASE">Stock Inward (+)</option>
                   <option value="OUTWARD_SALE">Dispatch / Sale Outward (-)</option>
@@ -196,7 +198,7 @@ export const InventoryView: React.FC = () => {
                   required
                   value={adjustQty}
                   onChange={(e) => setAdjustQty(parseFloat(e.target.value || '0'))}
-                  className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm font-bold"
+                  className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                 />
               </div>
 
@@ -207,11 +209,11 @@ export const InventoryView: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setAdjustModal(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-xl text-sm font-bold text-gray-700"
+                  className="px-4 py-2 bg-gray-100 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-200"
                 >
                   Cancel
                 </button>

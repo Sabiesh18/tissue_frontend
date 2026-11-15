@@ -37,7 +37,7 @@ export const api = {
   },
 
   // Assets
-  getAssets: async (params: Record<string, string> = {}) => {
+  getAssets: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/assets?${qs}`, { headers: getAuthHeaders() });
     return res.json();
@@ -50,6 +50,8 @@ export const api = {
     });
     return res.json();
   },
+  createAsset: async (data: any) => api.saveAsset(data),
+  updateAsset: async (id: string, data: any) => api.saveAsset({ ...data, assetId: id }),
   deleteAsset: async (id: string) => {
     const res = await fetch(`${API_BASE}/assets/${id}`, {
       method: 'DELETE',
@@ -59,7 +61,7 @@ export const api = {
   },
 
   // Vendors
-  getVendors: async (params: Record<string, string> = {}) => {
+  getVendors: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/vendors?${qs}`, { headers: getAuthHeaders() });
     return res.json();
@@ -72,6 +74,8 @@ export const api = {
     });
     return res.json();
   },
+  createVendor: async (data: any) => api.saveVendor(data),
+  updateVendor: async (id: string, data: any) => api.saveVendor({ ...data, vendorId: id }),
   deleteVendor: async (id: string) => {
     const res = await fetch(`${API_BASE}/vendors/${id}`, {
       method: 'DELETE',
@@ -81,7 +85,7 @@ export const api = {
   },
 
   // Customers
-  getCustomers: async (params: Record<string, string> = {}) => {
+  getCustomers: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/customers?${qs}`, { headers: getAuthHeaders() });
     return res.json();
@@ -94,13 +98,16 @@ export const api = {
     });
     return res.json();
   },
+  createCustomer: async (data: any) => api.saveCustomer(data),
+  updateCustomer: async (id: string, data: any) => api.saveCustomer({ ...data, customerId: id }),
 
   // Production
-  getPlans: async (params: Record<string, string> = {}) => {
+  getPlans: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/production/plans?${qs}`, { headers: getAuthHeaders() });
     return res.json();
   },
+  getProductionPlans: async (params: Record<string, any> = {}) => api.getPlans(params),
   savePlan: async (data: any) => {
     const res = await fetch(`${API_BASE}/production/plans`, {
       method: 'POST',
@@ -109,7 +116,7 @@ export const api = {
     });
     return res.json();
   },
-  getBatches: async (params: Record<string, string> = {}) => {
+  getBatches: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/production/batches?${qs}`, { headers: getAuthHeaders() });
     return res.json();
@@ -122,9 +129,12 @@ export const api = {
     });
     return res.json();
   },
+  createBatch: async (data: any) => api.saveBatch(data),
+  completeBatch: async (id: string, data: any) =>
+    api.saveBatch({ batchId: id, batchStatus: 'COMPLETED', ...data }),
 
   // Products & Inventory
-  getProducts: async (params: Record<string, string> = {}) => {
+  getProducts: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/products?${qs}`, { headers: getAuthHeaders() });
     return res.json();
@@ -137,7 +147,7 @@ export const api = {
     });
     return res.json();
   },
-  getInventory: async (params: Record<string, string> = {}) => {
+  getInventory: async (params: Record<string, any> = {}) => {
     const qs = new URLSearchParams(params).toString();
     const res = await fetch(`${API_BASE}/inventory?${qs}`, { headers: getAuthHeaders() });
     return res.json();

@@ -1,24 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { api } from '../api/client';
-import { DashboardMetrics } from '../types';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faChartPie,
   faIndustry,
   faBoxesStacked,
   faCogs,
-  faTriangleExclamation,
-  faArrowTrendUp,
-  faChartPie,
-  faCircleCheck,
-  faCircleDot,
-  faArrowsRotate,
   faTruckFast,
   faUsers,
-  faLayerGroup,
-  faClock,
+  faArrowTrendUp,
+  faTriangleExclamation,
+  faArrowsRotate,
+  faCircleDot,
 } from '@fortawesome/free-solid-svg-icons';
-
+import { api } from '../api/client';
 import { DashboardSkeleton } from '../components/SkeletonLoader';
+
+interface DashboardMetrics {
+  totalAssets: number;
+  operationalAssets: number;
+  totalProduction: number;
+  todayProduction: number;
+  totalWastageKg: number;
+  lowStockCount: number;
+  totalVendors: number;
+  totalCustomers: number;
+  totalProducts: number;
+  productionTrend: Array<{ day: string; produced: number }>;
+  recentBatches: Array<{
+    batchId: string;
+    batchCode: string;
+    batchStatus: string;
+    producedQuantity: number;
+    productName: string;
+    machineName: string;
+  }>;
+}
 
 export const DashboardView: React.FC = () => {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -26,12 +42,13 @@ export const DashboardView: React.FC = () => {
 
   const fetchMetrics = async () => {
     try {
+      setLoading(true);
       const res = await api.getDashboardMetrics();
-      if (res.success && res.data) {
-        setMetrics(res.data);
+      if (res && res.resultData) {
+        setMetrics(res.resultData);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Failed to load metrics', e);
     } finally {
       setLoading(false);
     }
@@ -39,8 +56,6 @@ export const DashboardView: React.FC = () => {
 
   useEffect(() => {
     fetchMetrics();
-    const timer = setInterval(fetchMetrics, 30000);
-    return () => clearInterval(timer);
   }, []);
 
   if (loading) {
@@ -62,7 +77,7 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="space-y-6 font-roboto">
       {/* Top Banner Card */}
-      <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-lg shadow-[#D8276D]/30">
             <FontAwesomeIcon icon={faChartPie} className="text-2xl" />
@@ -75,7 +90,7 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0F5] text-[#D8276D] border border-[#F8B4D0]">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#FFF0F5] text-[#D8276D]">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Plant: Operational</span>
           </div>
@@ -92,7 +107,7 @@ export const DashboardView: React.FC = () => {
       {/* Primary KPI Circular Gauge Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Total Production Card with Progress Bar */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Output</span>
             <div className="w-10 h-10 rounded-2xl bg-[#FFF0F5] text-[#D8276D] flex items-center justify-center">
@@ -105,7 +120,7 @@ export const DashboardView: React.FC = () => {
             </p>
             <p className="text-xs font-bold text-gray-500 mt-1">Finished Tissue Packs Produced</p>
           </div>
-          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <div className="pt-2 flex items-center justify-between text-xs font-bold text-emerald-600">
             <span className="flex items-center gap-1.5">
               <FontAwesomeIcon icon={faArrowTrendUp} />
               <span>Today: {Number(metrics?.todayProduction || 0).toLocaleString()}</span>
@@ -115,7 +130,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Circular Progress Gauge 1: Machinery Operational Rate */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+        <div className="bg-white rounded-3xl p-6 shadow-xl flex items-center justify-between">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Plant Uptime</span>
             <p className="text-2xl font-black text-black mt-2">
@@ -149,7 +164,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Circular Progress Gauge 2: Production Yield Efficiency */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+        <div className="bg-white rounded-3xl p-6 shadow-xl flex items-center justify-between">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Yield Efficiency</span>
             <p className="text-2xl font-black text-black mt-2">{yieldEfficiency}%</p>
@@ -181,7 +196,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Low Stock Alert Circular Indicator */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between">
+        <div className="bg-white rounded-3xl p-6 shadow-xl flex items-center justify-between">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Stock Threshold</span>
             <p className="text-2xl font-black text-black mt-2">
@@ -189,7 +204,7 @@ export const DashboardView: React.FC = () => {
             </p>
             <p className="text-xs font-bold text-rose-600 mt-1">Reorder Required</p>
           </div>
-          <div className="w-16 h-16 rounded-full bg-rose-50 border-4 border-rose-200 flex items-center justify-center text-rose-600 flex-shrink-0 shadow-inner">
+          <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 flex-shrink-0 shadow-inner">
             <FontAwesomeIcon icon={faTriangleExclamation} className="text-2xl" />
           </div>
         </div>
@@ -198,19 +213,19 @@ export const DashboardView: React.FC = () => {
       {/* Graphical Bar Charts & Donut Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Graphical Weekly Production Bar Chart */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="font-black text-lg text-black">Weekly Production Output (Graphical)</h3>
               <p className="text-xs text-gray-400 font-medium">Daily manufactured pack volumes</p>
             </div>
-            <span className="px-3 py-1 bg-[#FFF5F8] text-[#D8276D] font-bold text-xs rounded-full border border-[#F8B4D0]">
+            <span className="px-3 py-1 bg-[#FFF5F8] text-[#D8276D] font-bold text-xs rounded-full">
               7-Day Trend
             </span>
           </div>
 
           {/* SVG Vector Bar Graph with High-Density Curves */}
-          <div className="h-64 flex items-end justify-between gap-3 px-2 pt-6 pb-2 border-b border-gray-100">
+          <div className="h-64 flex items-end justify-between gap-3 px-2 pt-6 pb-2">
             {metrics?.productionTrend && metrics.productionTrend.length > 0 ? (
               metrics.productionTrend.map((item, idx) => {
                 const prod = Number(item.produced || 0);
@@ -254,7 +269,7 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Circular Distribution / Donut Composition Card */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 shadow-xl flex flex-col justify-between">
           <div>
             <h3 className="font-black text-lg text-black mb-1">Production vs Wastage</h3>
             <p className="text-xs text-gray-400 font-medium mb-6">Material conversion breakdown</p>
@@ -289,7 +304,7 @@ export const DashboardView: React.FC = () => {
 
             {/* Circular Ring Legend */}
             <div className="space-y-3 mt-6">
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8]">
                 <div className="flex items-center gap-2.5">
                   <span className="w-3 h-3 rounded-full bg-[#D8276D]"></span>
                   <span className="text-xs font-bold text-gray-800">Finished Goods</span>
@@ -298,7 +313,7 @@ export const DashboardView: React.FC = () => {
                   {totalProd.toLocaleString()} Packs
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8] border border-[#F8B4D0]/50">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FFF5F8]">
                 <div className="flex items-center gap-2.5">
                   <span className="w-3 h-3 rounded-full bg-rose-500"></span>
                   <span className="text-xs font-bold text-gray-800">Scrap / Pulp Loss</span>
@@ -310,7 +325,7 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+          <div className="mt-4 pt-3 flex items-center justify-between text-[11px] text-gray-400 font-bold">
             <span>Plant Target: &gt;95% Yield</span>
             <span className="text-emerald-600">Optimal Standard</span>
           </div>
@@ -320,10 +335,10 @@ export const DashboardView: React.FC = () => {
       {/* Circle Stat Bubbles & Live Batches */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Plant Hub Metrics in Circle Pods */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0]">
+        <div className="bg-white rounded-3xl p-6 shadow-xl">
           <h3 className="font-black text-lg text-black mb-4">Plant Asset & Partner Circles</h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
                 <FontAwesomeIcon icon={faCogs} />
               </div>
@@ -331,7 +346,7 @@ export const DashboardView: React.FC = () => {
               <p className="text-[11px] font-bold text-gray-500">Plant Machines</p>
             </div>
 
-            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
                 <FontAwesomeIcon icon={faTruckFast} />
               </div>
@@ -339,7 +354,7 @@ export const DashboardView: React.FC = () => {
               <p className="text-[11px] font-bold text-gray-500">Pulp Vendors</p>
             </div>
 
-            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
                 <FontAwesomeIcon icon={faUsers} />
               </div>
@@ -347,7 +362,7 @@ export const DashboardView: React.FC = () => {
               <p className="text-[11px] font-bold text-gray-500">Wholesale Clients</p>
             </div>
 
-            <div className="p-4 rounded-3xl bg-[#FFF5F8] border border-[#F8B4D0]/60 flex flex-col items-center text-center">
+            <div className="p-4 rounded-3xl bg-[#FFF5F8] flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#D8276D] to-[#DF538B] text-white flex items-center justify-center text-lg shadow-md mb-2">
                 <FontAwesomeIcon icon={faBoxesStacked} />
               </div>
@@ -358,17 +373,17 @@ export const DashboardView: React.FC = () => {
         </div>
 
         {/* Live Active Batches Queue */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0]">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl">
           <h3 className="font-black text-lg text-black mb-4">Live Production Lines</h3>
           <div className="space-y-3">
             {metrics?.recentBatches && metrics.recentBatches.length > 0 ? (
               metrics.recentBatches.map((b) => (
                 <div
                   key={b.batchId}
-                  className="p-4 rounded-2xl border border-gray-100 hover:border-[#F8B4D0] bg-[#FFF5F8]/40 flex items-center justify-between transition-all"
+                  className="p-4 rounded-2xl bg-[#FFF5F8]/50 flex items-center justify-between transition-all"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-full bg-white border border-[#F8B4D0] flex items-center justify-center text-[#D8276D] font-black text-xs shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#D8276D] font-black text-xs shadow-sm">
                       <FontAwesomeIcon icon={faCircleDot} className="animate-pulse" />
                     </div>
                     <div>

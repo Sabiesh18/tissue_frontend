@@ -1,22 +1,22 @@
 import React from 'react';
 
 /**
- * Modern pulsing skeleton loader component matching the soft pink theme
+ * Modern pulsing skeleton loader component matching the soft pink theme without borders
  */
 export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse bg-[#FFF0F5] border border-[#F8B4D0]/40 rounded-xl ${className}`} />
+  <div className={`animate-pulse bg-[#FFF0F5] rounded-xl ${className}`} />
 );
 
 /**
- * Reusable Skeleton Loader for Tables (Assets, Vendors, Customers, Orders, Inventory)
+ * Reusable Skeleton Loader for Tables (Assets, Vendors, Customers, Orders, Inventory, Settings)
  */
 export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
   rows = 5,
   columns = 6,
 }) => (
-  <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+  <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
     {/* Table Header Skeleton */}
-    <div className="bg-[#FFF5F8] border-b border-[#F8B4D0] p-4 flex items-center justify-between gap-4">
+    <div className="bg-[#FFF5F8] p-5 flex items-center justify-between gap-4">
       <Skeleton className="h-5 w-48" />
       <div className="flex gap-2">
         <Skeleton className="h-8 w-24 rounded-lg" />
@@ -52,7 +52,7 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
 export const DashboardSkeleton: React.FC = () => (
   <div className="space-y-6">
     {/* Top Header Banner Skeleton */}
-    <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col md:flex-row items-center justify-between gap-4">
+    <div className="bg-white rounded-3xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-4 w-full md:w-auto">
         <Skeleton className="w-14 h-14 rounded-2xl flex-shrink-0" />
         <div className="space-y-2 w-full md:w-80">
@@ -71,7 +71,7 @@ export const DashboardSkeleton: React.FC = () => (
       {Array.from({ length: 4 }).map((_, idx) => (
         <div
           key={idx}
-          className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex items-center justify-between"
+          className="bg-white rounded-3xl p-6 shadow-lg flex items-center justify-between"
         >
           <div className="space-y-2 flex-1">
             <Skeleton className="h-3 w-20" />
@@ -85,7 +85,7 @@ export const DashboardSkeleton: React.FC = () => (
 
     {/* Graphical Chart & Donut Skeletons */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] space-y-4">
+      <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-lg space-y-4">
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <Skeleton className="h-5 w-44" />
@@ -103,7 +103,7 @@ export const DashboardSkeleton: React.FC = () => (
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl p-6 shadow-xl border border-[#F8B4D0] flex flex-col items-center justify-center p-6 space-y-4">
+      <div className="bg-white rounded-3xl p-6 shadow-lg flex flex-col items-center justify-center p-6 space-y-4">
         <Skeleton className="h-5 w-36 self-start" />
         <Skeleton className="w-40 h-40 rounded-full my-3" />
         <div className="w-full space-y-2">
@@ -114,3 +114,40 @@ export const DashboardSkeleton: React.FC = () => (
     </div>
   </div>
 );
+
+/**
+ * Universal Page Skeleton for view transitions
+ */
+export const PageSkeleton: React.FC<{ tab?: string }> = ({ tab = 'dashboard' }) => {
+  if (tab === 'dashboard') {
+    return <DashboardSkeleton />;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header Banner Skeleton */}
+      <div className="bg-white rounded-3xl p-6 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Skeleton className="w-14 h-14 rounded-2xl flex-shrink-0" />
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-3 w-72" />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-28 rounded-xl" />
+          <Skeleton className="h-10 w-32 rounded-xl" />
+        </div>
+      </div>
+
+      {/* Filter / Search Bar Skeleton */}
+      <div className="bg-white rounded-2xl p-4 shadow-md flex gap-3">
+        <Skeleton className="h-10 flex-1 rounded-xl" />
+        <Skeleton className="h-10 w-36 rounded-xl" />
+      </div>
+
+      {/* Main Table Skeleton */}
+      <TableSkeleton rows={6} columns={5} />
+    </div>
+  );
+};

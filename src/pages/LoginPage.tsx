@@ -14,7 +14,6 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
     try {
       const res = await api.login({ username, password });
       if (res.success && res.token && res.user) {
@@ -31,7 +30,7 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FFF0F5] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-[#F8B4D0]">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-tr from-[#D8276D] to-[#DF538B] flex items-center justify-center text-white shadow-lg shadow-[#D8276D]/30">
             <Factory className="w-9 h-9" />
@@ -41,7 +40,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-3 text-rose-700 text-sm">
+          <div className="mb-6 p-4 rounded-xl bg-rose-50 flex items-center gap-3 text-rose-700 text-sm">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
             <span className="font-medium">{error}</span>
           </div>
@@ -59,7 +58,7 @@ export const LoginPage: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-black font-medium focus:outline-none focus:ring-2 focus:ring-[#D8276D] focus:border-transparent transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-[#FFF5F8] rounded-xl text-black font-medium focus:outline-none focus:ring-2 focus:ring-[#D8276D] transition-all"
                 placeholder="Enter username"
               />
             </div>
@@ -76,7 +75,7 @@ export const LoginPage: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-black font-medium focus:outline-none focus:ring-2 focus:ring-[#D8276D] focus:border-transparent transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-[#FFF5F8] rounded-xl text-black font-medium focus:outline-none focus:ring-2 focus:ring-[#D8276D] transition-all"
                 placeholder="Enter password"
               />
             </div>

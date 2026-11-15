@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit2, Trash2, Phone, Mail, MapPin } from 'lucide-react';
 import { api } from '../api/client';
 import { Vendor } from '../types';
-import { Truck, Plus, Search, Trash2, Edit2, Phone, Mail, MapPin } from 'lucide-react';
 import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const VendorsView: React.FC = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Partial<Vendor> | null>(null);
 
   const fetchVendors = async () => {
     try {
       setLoading(true);
-      const res = await api.getVendors(search ? { search } : {});
-      if (res.success && res.data) {
-        setVendors(res.data);
+      const res = await api.getVendors();
+      if (res && res.resultData) {
+        setVendors(res.resultData);
       }
     } catch (e) {
-      console.error(e);
+      console.error('Failed to fetch vendors', e);
     } finally {
       setLoading(false);
     }
@@ -31,35 +30,37 @@ export const VendorsView: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingVendor?.vendorCode || !editingVendor?.vendorName) {
-      alert('Code and Vendor Name are required');
-      return;
-    }
+    if (!editingVendor) return;
 
     try {
-      await api.saveVendor(editingVendor);
+      if (editingVendor.vendorId) {
+        await api.updateVendor(editingVendor.vendorId, editingVendor);
+      } else {
+        await api.createVendor(editingVendor);
+      }
       setShowModal(false);
+      setEditingVendor(null);
       fetchVendors();
     } catch (e) {
-      alert('Failed to save vendor');
+      console.error('Failed to save vendor', e);
+      alert('Error saving vendor record');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Delete this vendor?')) {
-      try {
-        await api.deleteVendor(id);
-        fetchVendors();
-      } catch (e) {
-        alert('Failed to delete vendor');
-      }
+    if (!confirm('Are you sure you want to deactivate this vendor?')) return;
+    try {
+      await api.deleteVendor(id);
+      fetchVendors();
+    } catch (e) {
+      console.error('Failed to delete vendor', e);
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-black">Vendors & Raw Material Suppliers</h2>
           <p className="text-sm text-gray-600 mt-1">
@@ -91,11 +92,11 @@ export const VendorsView: React.FC = () => {
       {loading ? (
         <TableSkeleton rows={5} columns={6} />
       ) : (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                   <th className="py-3.5 px-4">Vendor Code / Name</th>
                   <th className="py-3.5 px-4">Contact Info</th>
                   <th className="py-3.5 px-4">Location</th>
@@ -180,7 +181,7 @@ export const VendorsView: React.FC = () => {
       {/* Vendor Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#F8B4D0]">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
             <h3 className="text-xl font-black text-black mb-4">
               {editingVendor?.vendorId ? 'Edit Vendor Details' : 'Register New Vendor'}
             </h3>
@@ -193,7 +194,7 @@ export const VendorsView: React.FC = () => {
                     required
                     value={editingVendor?.vendorCode || ''}
                     onChange={(e) => setEditingVendor({ ...editingVendor, vendorCode: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm font-bold"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
                 <div>
@@ -202,7 +203,7 @@ export const VendorsView: React.FC = () => {
                     type="text"
                     value={editingVendor?.companyName || ''}
                     onChange={(e) => setEditingVendor({ ...editingVendor, companyName: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
               </div>
@@ -215,7 +216,7 @@ export const VendorsView: React.FC = () => {
                   value={editingVendor?.vendorName || ''}
                   onChange={(e) => setEditingVendor({ ...editingVendor, vendorName: e.target.value })}
                   placeholder="e.g. TNPL Pulp Corporation"
-                  className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm font-bold"
+                  className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                 />
               </div>
 
@@ -226,7 +227,7 @@ export const VendorsView: React.FC = () => {
                     type="text"
                     value={editingVendor?.phone || ''}
                     onChange={(e) => setEditingVendor({ ...editingVendor, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
                 <div>
@@ -235,7 +236,7 @@ export const VendorsView: React.FC = () => {
                     type="email"
                     value={editingVendor?.email || ''}
                     onChange={(e) => setEditingVendor({ ...editingVendor, email: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
               </div>
@@ -247,7 +248,7 @@ export const VendorsView: React.FC = () => {
                     type="text"
                     value={editingVendor?.city || ''}
                     onChange={(e) => setEditingVendor({ ...editingVendor, city: e.target.value })}
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
                 <div>
@@ -261,16 +262,16 @@ export const VendorsView: React.FC = () => {
                         creditPeriodDays: parseInt(e.target.value || '30', 10),
                       })
                     }
-                    className="w-full px-3 py-2 bg-[#FFF5F8] border border-[#F8B4D0] rounded-xl text-sm"
+                    className="w-full px-3 py-2 bg-[#FFF5F8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#D8276D]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-xl text-sm font-bold text-gray-700"
+                  className="px-4 py-2 bg-gray-100 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-200"
                 >
                   Cancel
                 </button>

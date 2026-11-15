@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/client';
 import { PurchaseOrder, SalesOrder } from '../types';
-import { ShoppingCart, ShoppingBag, ArrowUpRight, ArrowDownLeft, Calendar } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { TableSkeleton } from '../components/SkeletonLoader';
 
 export const OrdersView: React.FC = () => {
@@ -30,14 +30,14 @@ export const OrdersView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-2xl p-6 shadow-md border border-[#F8B4D0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-black">Commercial Orders & Invoicing</h2>
           <p className="text-sm text-gray-600 mt-1">
             Finished tissue sales orders & raw material procurement purchase orders.
           </p>
         </div>
-        <div className="bg-[#FFF5F8] p-1 rounded-xl border border-[#F8B4D0] flex">
+        <div className="bg-[#FFF5F8] p-1 rounded-xl flex">
           <button
             onClick={() => setActiveTab('sales')}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -62,11 +62,11 @@ export const OrdersView: React.FC = () => {
       {loading ? (
         <TableSkeleton rows={5} columns={6} />
       ) : activeTab === 'sales' ? (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                   <th className="py-3.5 px-4">SO Number</th>
                   <th className="py-3.5 px-4">Customer</th>
                   <th className="py-3.5 px-4">Order Date</th>
@@ -107,11 +107,11 @@ export const OrdersView: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-md border border-[#F8B4D0] overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#FFF5F8] border-b border-[#F8B4D0] text-xs font-bold text-gray-600 uppercase">
+                <tr className="bg-[#FFF5F8] text-xs font-bold text-gray-600 uppercase">
                   <th className="py-3.5 px-4">PO Number</th>
                   <th className="py-3.5 px-4">Vendor Supplier</th>
                   <th className="py-3.5 px-4">Date</th>
