@@ -34,6 +34,17 @@ const SettingsView = lazy(() =>
 export const App: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
+  const [isNavigating, setIsNavigating] = useState<boolean>(false);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === currentTab) return;
+    setIsNavigating(true);
+    setCurrentTab(tab);
+    // Smooth transition to show the toilet roll loader during page change
+    setTimeout(() => {
+      setIsNavigating(false);
+    }, 450);
+  };
 
   if (isLoading) {
     return <ToiletPaperLoader message="Loading Plant Systems..." />;
@@ -102,10 +113,31 @@ export const App: React.FC = () => {
     }
   };
 
+  const getModuleDisplayName = (tab: string) => {
+    const map: Record<string, string> = {
+      dashboard: 'Executive Dashboard',
+      production: 'Manufacturing & Batches',
+      inventory: 'Inventory & Stock Records',
+      assets: 'Plant Machinery & Assets',
+      vendors: 'Vendors & Suppliers Directory',
+      customers: 'Client Accounts & Credit Records',
+      orders: 'Commercial Sales & Purchase Orders',
+      settings: 'System Administration & Security',
+    };
+    return map[tab] || 'Module';
+  };
+
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#FFF0F5]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#FFF0F5] relative">
+      {/* Toilet paper transition loader when switching pages */}
+      {isNavigating && (
+        <ToiletPaperLoader
+          message={`Opening ${getModuleDisplayName(currentTab)}...`}
+        />
+      )}
+
       {/* Sidebar Navigation */}
-      <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+      <Sidebar currentTab={currentTab} setCurrentTab={handleTabChange} />
 
       {/* Main View Area */}
       <main className="flex-1 overflow-y-auto py-3 pr-4 pl-1 md:py-3.5 md:pr-5 md:pl-1">
